@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini-Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+            background-color: #f5e0d0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            max-width: 800px;
+            text-align: center;
+            display: flex;
+            gap: 5px;
+            padding: 5px;
+            margin: 0 auto;
+            height: 100%;
+        }
+        
+        .caption {
+            margin-top: 10px;
+            color: #8d5a5a;
+            font-size: 18px;
+        }
+
+        .album-section {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .buttons-section {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            padding: 6px;
+            height: fit-content;
+        }
+
+        .header {
+            margin-top: 2px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 4px;
+            width: 100%;
+            height: fit-content;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 0;
+        }
+
+        .header input[type="text"] {
+            width: 150px;
+            padding: 8px;
+            border: 1px solid #8d5a5a;
+            border-radius: 4px;
+        }
+
+        .header button {
+            width: 40px;
+            height: 40px;
+            background-color: #8d5a5a;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header button i {
+            font-size: 18px;
+        }
+
+        .col {
+            margin: 0;
+            padding: 0;
+        }
+
+        .right {
+            margin: 0;
+            padding: 0;
+        }
+
+        .left {
+            width: 25%;
+            height: 25%;
+        }
+
+        .left img {
+            width: 30px;
+            height: auto;
+        }
+
+        .bt {
+            width: 50px;
+            height: 50px;
+            margin: 0;
+        }
+
+        .nextSong {
+            transform: rotate(90deg);
+        }
+
+        .prevSong {
+            transform: rotate(265deg);
+        }
+        
+        .visual-song {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 0;
+            gap: 2px;
+        }
+
+        #wrap {
+            width: 100%;
+            max-width: 240px;
+            margin: 0 auto;
+        }
+
+        .song-info {
+            height: fit-content;
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .song-data {
+            margin: 0;
+            padding: 1px;
+        }
+
+        .title {
+            display: block;
+            margin-bottom: 1px;
+            font-size: 16px;
+            color: #8d5a5a;
+        }
+
+        .artistAlbum {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding: 6px;
+                height: auto;
+            }
+
+            .album-section {
+                gap: 6px;
+            }
+
+            .visual-song {
+                min-height: 240px;
+            }
+
+            .buttons-section {
+                flex-direction: row;
+                justify-content: center;
+                padding: 10px;
+            }
+
+            .header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .header-left, .header-right {
+                display: flex;
+                align-items: center;
+            }
+
+            .left img {
+                width: 25px;
+            }
+
+            #album {
+                width: 250px !important;
+                height: 250px !important;
+            }
+
+            .header input[type="text"] {
+                width: 120px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .container {
+                padding: 4px;
+            }
+
+            .bt {
+                width: 40px;
+                height: 40px;
+            }
+
+            #album {
+                width: 200px !important;
+                height: 200px !important;
+            }
+
+            .header button {
+                width: 35px;
+                height: 35px;
+            }
+
+            .header input[type="text"] {
+                width: 100px;
+            }
+
+            .visual-song {
+                min-height: 200px;
+            }
+        }
+
+        @keyframes spinThat {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes getOut {
+            0% { transform: translateX(50%) rotate(0deg); }
+            100% { transform: translateX(0) rotate(360deg); }
+        }
+
+        #vinyl {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://gallery.yopriceville.com/var/resizes/Free-Clipart-Pictures/Music-PNG/Gramophone_Vinyl_LP_Record_PNG_Transparent_Clip_Art_Image.png?m=1462983196');
+            background-size: 106% 106%;
+            background-position: center;
+            box-shadow: 0 0 20px 4px rgba(0,0,0,0.6);
+            border-radius: 50%;
+            animation: getOut 1s ease-out forwards, spinThat 5s linear infinite 1s;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="album-section">
+            <div class="header">
+                <div class="header-left">
+                    <img class="col left" src="images/teddy.png">
+                    <p class="col right">Welcome to Your Music Player</p>
+                </div>
+                <div class="header-right">
+                    <input type="text" placeholder="Search song">
+                    <button type="submit"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+        
+
+            <div class="visual-song">
+                <div id="wrap">
+                    <div id="album" style="
+                        position: relative;
+                        width: 300px;
+                        height: 300px;
+                        margin: 0 auto;
+                    ">
+                        <div id="cover" style="
+                          position: absolute;
+                          top: 0;
+                          left: 90px;
+                          z-index: 2;
+                          width: 75%;
+                          height: 75%;
+                          background-image: url('https://upload.wikimedia.org/wikipedia/en/6/6a/UltraviolenceLDR.png');
+                          background-size: cover;
+                          box-shadow: 5px 0 20px 0 rgba(0,0,0,0.6),
+                                      inset 0 0 10px 5px rgba(255,255,255,0.2),
+                                      inset 0 0 4px 2px rgba(0,0,0,0.2);
+                          border-radius: 4px;
+                          overflow: hidden;
+                        ">
+                          <div style="
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            z-index: 10;
+                            width: 75%;
+                            height: 75%;
+                            background-image: url('http://i.imgur.com/i0fMWpe.jpg');
+                            background-size: cover;
+                            border-radius: 4px;
+                            mix-blend-mode: screen;
+                            opacity: 0.5;
+                          "></div>
+                
+                          <div style="
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            z-index: 20;
+                            width: 75%;
+                            height: 75%;
+                            background-image: url('https://orig06.deviantart.net/0124/f/2013/136/6/7/texture_326_by_sirius_sdz-d65gs3s.jpg');
+                            background-size: cover;
+                            border-radius: 4px;
+                            mix-blend-mode: screen;
+                            opacity: 0.2;
+                          "></div>
+                        </div>
+                
+                        <div id="vinyl" style="
+                          position: absolute;
+                          top: 0;
+                          left: 0;
+                          z-index: 1;
+                          width: 75%;
+                          height: 75%;
+                          background-image: url('https://gallery.yopriceville.com/var/resizes/Free-Clipart-Pictures/Music-PNG/Gramophone_Vinyl_LP_Record_PNG_Transparent_Clip_Art_Image.png?m=1462983196');
+                          background-size: 106% 106%;
+                          background-position: center;
+                          box-shadow: 0 0 20px 4px rgba(0,0,0,0.6);
+                          border-radius: 50%;
+                          animation: getOut 1s ease-out forwards, spinThat 5s linear infinite 1s;
+                          overflow: hidden;
+                        ">
+                          <div style="
+                            position: absolute;
+                            top: 5%;
+                            left: 5%;
+                            z-index: 10;
+                            width: 65%;
+                            height: 65%;
+                            background-image: url('http://www.designresourcebox.com/ths/diverse/blacktextures/82267467.jpg');
+                            background-size: cover;
+                            border-radius: 50%;
+                            mix-blend-mode: screen;
+                            opacity: 0.3;
+                          "></div>
+                
+                        <div id="print" style="
+                          position: absolute;
+                          top: 33%;
+                          left: 33%;
+                          height: 34%;
+                          width: 34%;
+                          box-shadow: inset 0 0 0 5px rgba(150,150,150,0.5);
+                          background-image: url('http://assets.teamrock.com/image/14d29742-c6f7-43f6-bbe1-6bf7b3b34c6f?w=800');
+                          background-size: cover;
+                          border-radius: 50%;
+                        "></div>
+                    </div>
+                </div>
+            
+                <style>
+                  @keyframes getOut {
+                    0% { transform: translateX(-50%); }
+                    100% { transform: translateX(0); }
+                  }
+              
+                  @keyframes spinThat {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                  }
+                </style>
+            </div>
+
+            <div class="song-info">
+                <div class="song-data">
+                    <em class="title">Pretty when you cry</em>
+                    <p class="artistAlbum">Lana del Rey - Ultraviolence</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="buttons-section">
+            <input type="image" src="images/random.png" name="randomSong" class="bt random" id="patternn">
+            <input type="image" src="images/arrows.png" name="prevSong" class="bt prevSong" id="songch">
+            <input type="image" src="images/play.png" name="playSong" class="bt play" id="state">
+            <input type="image" src="images/arrows.png" name="nextSong" class="bt nextSong" id="songch">
+            <input type="image" src="images/loop.png" name="loopSong" class="bt loop" id="loop">
+        </div>
+    </div>
+</body>
+</html>
