@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mini-Player</title>
+    <button id="spotify-login" type="button">Login with Spotify</button>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         body {
@@ -415,5 +417,29 @@
             <input type="image" src="images/loop.png" name="loopSong" class="bt loop" id="loop">
         </div>
     </div>
+
+    <script>
+        const clientId = '2c7cae0c0c8d4c8b9c0c8d4c8b9c0c8d';
+        const redirectUri = 'http://localhost:8888/callback';
+        const scope = 'user-read-private user-read-email playlist-read-private playlist-read-collaborative user-library-read user-top-read user-read-recently-played user-read-currently-playing user-read-playback-state user-modify-playback-state';
+
+        document.getElementById('spotify-login').addEventListener('click', () => {
+            const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
+            
+            // Use IPC to communicate with the main process
+            window.electron.openAuthWindow(authUrl);
+        });
+
+        // Listen for the auth token from the main process
+        window.electron.onAuthToken((token) => {
+            if (token) {
+                console.log('Received auth token:', token);
+                // Store the token and update UI
+                localStorage.setItem('spotify_token', token);
+                document.getElementById('spotify-login').style.display = 'none';
+                // You can now use this token for Spotify API calls
+            }
+        });
+    </script>
 </body>
 </html>
