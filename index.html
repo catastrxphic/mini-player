@@ -323,7 +323,7 @@
                             z-index: 10;
                             width: 75%;
                             height: 75%;
-                            background-image: url('http://i.imgur.com/i0fMWpe.jpg');
+                            background-image: url('https://i.imgur.com/i0fMWpe.jpg');
                             background-size: cover;
                             border-radius: 4px;
                             mix-blend-mode: screen;
@@ -367,7 +367,7 @@
                             z-index: 10;
                             width: 65%;
                             height: 65%;
-                            background-image: url('http://www.designresourcebox.com/ths/diverse/blacktextures/82267467.jpg');
+                            background-image: url('https://www.designresourcebox.com/ths/diverse/blacktextures/82267467.jpg');
                             background-size: cover;
                             border-radius: 50%;
                             mix-blend-mode: screen;
@@ -381,7 +381,7 @@
                           height: 34%;
                           width: 34%;
                           box-shadow: inset 0 0 0 5px rgba(150,150,150,0.5);
-                          background-image: url('http://assets.teamrock.com/image/14d29742-c6f7-43f6-bbe1-6bf7b3b34c6f?w=800');
+                          background-image: url('https://assets.teamrock.com/image/14d29742-c6f7-43f6-bbe1-6bf7b3b34c6f?w=800');
                           background-size: cover;
                           border-radius: 50%;
                         "></div>
@@ -419,17 +419,30 @@
     </div>
 
     <script>
-        const clientId = '2c7cae0c0c8d4c8b9c0c8d4c8b9c0c8d';
-        const redirectUri = 'http://localhost:8888/callback';
+        // Get the client ID from the main process
+        let clientId;
+        window.electron.getSpotifyClientId().then(id => {
+            clientId = id;
+            console.log('Received client ID:', clientId);
+        });
+        
+        const redirectUri = 'https://localhost:8888/callback';
         const scope = 'user-read-private user-read-email playlist-read-private playlist-read-collaborative user-library-read user-top-read user-read-recently-played user-read-currently-playing user-read-playback-state user-modify-playback-state';
-
+    
         document.getElementById('spotify-login').addEventListener('click', () => {
+            if (!clientId) {
+                console.error('Client ID not loaded yet');
+                alert('Please wait a moment and try again');
+                return;
+            }
+            
             const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
+            console.log('Opening auth URL:', authUrl);
             
             // Use IPC to communicate with the main process
             window.electron.openAuthWindow(authUrl);
         });
-
+    
         // Listen for the auth token from the main process
         window.electron.onAuthToken((token) => {
             if (token) {
@@ -441,5 +454,6 @@
             }
         });
     </script>
+    
 </body>
 </html>
